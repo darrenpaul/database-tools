@@ -6,7 +6,16 @@ class SqliteManager:
     def __init__(self):
         self.database = r"C:\dev\pymachine\databases\cryptocurrency.db"
 
-    def create_table(self, table=None, columns=None):
+    def create_table(self, table, columns):
+        """
+        Create a new table in your database along with all the columns
+        
+        Keyword Arguments:
+            table {basestring} -- The name for the table being created
+            columns {basestring} -- A string the the name and type of for all the columns
+            E.G. <name type, name type>
+        """
+
         connection = sqlite3.connect(self.database)
         cursor = connection.cursor()
 
@@ -18,6 +27,15 @@ class SqliteManager:
             cursor.execute(command)
 
     def insert_data(self, table=None, data=None):
+        """
+        Insert data into the define table
+        
+        Keyword Arguments:
+            table {basestring} -- The name of the table to insert into
+            data {list} -- A list of all the data in the correct order of columns
+            E.G. <[item1, item2, item3, item4]>
+        """
+
         connection = sqlite3.connect(self.database)
         cursor = connection.cursor()
 
@@ -42,7 +60,19 @@ class SqliteManager:
                 prepared_tables.append(str(table[0]))
             return prepared_tables
 
-    def retrieve_from_table(self, row="*", table=None):
+    def retrieve_from_table(self, row="*", table):
+        # todo fix return docstring
+        """
+        Retrieve all the data from the table and the specifed row
+        
+        Keyword Arguments:
+            row {basestring} -- The row now to use (default: {"*"})
+            table {basestring} -- The name of the table to query from
+        
+        Returns:
+            [type] -- [description]
+        """
+
         connection = sqlite3.connect(self.database)
         cursor = connection.cursor()
 
@@ -54,10 +84,20 @@ class SqliteManager:
 
     def commit_to_database(self):
         connection = sqlite3.connect(self.database)
-        cursor = connection.cursor()
+
         connection.commit()
 
-    def get_last_id_index(self, table=None):
+    def get_last_id_index(self, table):
+        """
+        This gets the last value under the id row
+        
+        Keyword Arguments:
+            table {basestring} -- The name of the table to query from
+        
+        Returns:
+            basestring -- returns the last value
+        """
+
         connection = sqlite3.connect(self.database)
         cursor = connection.cursor()
 
