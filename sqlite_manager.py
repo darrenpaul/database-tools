@@ -60,7 +60,7 @@ class SqliteManager:
                 prepared_tables.append(str(table[0]))
             return prepared_tables
 
-    def retrieve_from_table(self, row="*", table):
+    def retrieve_from_table(self, row="*", table=None):
         # todo fix return docstring
         """
         Retrieve all the data from the table and the specifed row
@@ -72,15 +72,15 @@ class SqliteManager:
         Returns:
             [type] -- [description]
         """
+        if table:
+            connection = sqlite3.connect(self.database)
+            cursor = connection.cursor()
 
-        connection = sqlite3.connect(self.database)
-        cursor = connection.cursor()
+            with connection:
+                command = "SELECT {row} FROM {table}".format(row=row, table=table)
+                cursor.execute(command)
 
-        with connection:
-            command = "SELECT {row} FROM {table}".format(row=row, table=table)
-            cursor.execute(command)
-
-            return cursor.fetchall()
+                return cursor.fetchall()
 
     def commit_to_database(self):
         connection = sqlite3.connect(self.database)
