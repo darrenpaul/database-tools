@@ -82,7 +82,6 @@ class SqliteManager:
                     command = "SELECT {row} FROM {table} WHERE {where}".format(row=row, table=table, where=where)
                 else:
                     command = "SELECT {row} FROM {table}".format(row=row, table=table)
-                print command
                 cursor.execute(command)
 
                 return cursor.fetchall()
