@@ -60,7 +60,7 @@ class SqliteManager:
                 prepared_tables.append(str(table[0]))
             return prepared_tables
 
-    def retrieve_from_table(self, row="*", table=None):
+    def retrieve_from_table(self, row="*", table=None, where=None):
         # todo fix return docstring
         """
         Retrieve all the data from the table and the specifed row
@@ -68,6 +68,7 @@ class SqliteManager:
         Keyword Arguments:
             row {basestring} -- The row now to use (default: {"*"})
             table {basestring} -- The name of the table to query from
+            where {basestring} -- The search condition to use E.G. <name=apples>
         
         Returns:
             [type] -- [description]
@@ -77,7 +78,11 @@ class SqliteManager:
             cursor = connection.cursor()
 
             with connection:
-                command = "SELECT {row} FROM {table}".format(row=row, table=table)
+                if where:
+                    command = "SELECT {row} FROM {table} WHERE {where}".format(row=row, table=table, where=where)
+                else:
+                    command = "SELECT {row} FROM {table}".format(row=row, table=table)
+                print command
                 cursor.execute(command)
 
                 return cursor.fetchall()
