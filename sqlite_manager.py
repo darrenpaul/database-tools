@@ -45,6 +45,28 @@ class SqliteManager:
             command = "INSERT INTO {table} VALUES({string})".format(table=table, string=string)
             cursor.executemany(command, data)
 
+    def update_data(self, **kwargs):
+        """
+        Update already existing data within the database
+
+        Keyword Arguments:
+            table {basestring} -- The name of the table to insert into
+            set {basestring} -- The updated value E.G. <name=apples>
+            where {basestring} -- The search condition to use E.G. <name=apples>
+        :param kwargs: <table>, <setvalue>, <where>
+        :return:
+        """
+        connection = sqlite3.connect(self.database)
+        cursor = connection.cursor()
+
+        with connection:
+            command = "UPDATE {table} SET {setvalue} WHERE {where}".format(table=kwargs["table"],
+                                                                           setvalue=kwargs["setvalue"],
+                                                                           where=kwargs["where"])
+
+            cursor.execute(command)
+
+
     def get_tables_in_database(self):
         connection = sqlite3.connect(self.database)
         cursor = connection.cursor()
