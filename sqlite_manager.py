@@ -66,7 +66,6 @@ class SqliteManager:
 
             cursor.execute(command)
 
-
     def get_tables_in_database(self):
         connection = sqlite3.connect(self.database)
         cursor = connection.cursor()
@@ -105,8 +104,12 @@ class SqliteManager:
                 else:
                     command = "SELECT {row} FROM {table}".format(row=row, table=table)
                 cursor.execute(command)
+                keys = self.__get_row_names(data=cursor.description)
+                values = cursor.fetchall()[0]
 
-                return cursor.fetchall()
+                data = self.__format_data(rows=keys, values=values)
+
+                return data
 
     def commit_to_database(self):
         connection = sqlite3.connect(self.database)
@@ -147,3 +150,15 @@ class SqliteManager:
             holders.append("?")
 
         return symbol.join(holders)
+
+    def __get_row_names(self, data):
+        keys = []
+        for item in data:
+            keys.append(item[0])
+        return keys
+
+    def __format_data(self, rows, values):
+        data = {}
+        for i in range(1, len(rows)):
+            data.update({rows[i]: values[i]})
+        return data
