@@ -105,7 +105,7 @@ class SqliteManager:
                     command = "SELECT {row} FROM {table}".format(row=row, table=table)
                 cursor.execute(command)
                 keys = self.__get_row_names(data=cursor.description)
-                values = cursor.fetchall()[0]
+                values = cursor.fetchall()
 
                 data = self.__format_data(rows=keys, values=values)
 
