@@ -1,5 +1,6 @@
 import sqlite3
 import datetime
+from pprint import pprint
 
 
 class SqliteManager:
@@ -9,7 +10,7 @@ class SqliteManager:
     def create_table(self, table, columns):
         """
         Create a new table in your database along with all the columns
-        
+
         Keyword Arguments:
             table {basestring} -- The name for the table being created
             columns {basestring} -- A string the the name and type of for all the columns
@@ -29,7 +30,7 @@ class SqliteManager:
     def insert_data(self, table=None, data=None):
         """
         Insert data into the define table
-        
+
         Keyword Arguments:
             table {basestring} -- The name of the table to insert into
             data {list} -- A list of all the data in the correct order of columns
@@ -75,7 +76,7 @@ class SqliteManager:
             cursor.execute(command)
 
             tables = cursor.fetchall()
-            
+
             prepared_tables = []
             for table in tables:
                 prepared_tables.append(str(table[0]))
@@ -85,12 +86,12 @@ class SqliteManager:
         # todo fix return docstring
         """
         Retrieve all the data from the table and the specifed row
-        
+
         Keyword Arguments:
             row {basestring} -- The row now to use (default: {"*"})
             table {basestring} -- The name of the table to query from
             where {basestring} -- The search condition to use E.G. <name=apples>
-        
+
         Returns:
             [type] -- [description]
         """
@@ -119,10 +120,10 @@ class SqliteManager:
     def get_last_id_index(self, table):
         """
         This gets the last value under the id row
-        
+
         Keyword Arguments:
             table {basestring} -- The name of the table to query from
-        
+
         Returns:
             basestring -- returns the last value
         """
@@ -158,7 +159,11 @@ class SqliteManager:
         return keys
 
     def __format_data(self, rows, values):
-        data = {}
-        for i in range(1, len(rows)):
-            data.update({rows[i]: values[i]})
+        data = []
+        for value in values:
+            d = {}
+            for i in range(0, len(rows)):
+                d.update({rows[i]: value[i]})
+            data.append(d)
+
         return data
