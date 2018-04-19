@@ -144,6 +144,19 @@ class SqliteManager:
 
             return row_id
 
+    @staticmethod
+    def prepare_set_value(**kwargs):
+        """
+        Provide a dictionary of the row name in the dictionary and the value to update
+        :param kwargs:
+        :return:
+        """
+        string = ""
+        for key, val in kwargs.iteritems():
+            string = "{string}{key}='{value}', ".format(string=string, key=key, value=val)
+        string = string[:-2]
+        return string
+
     def __build_values_string(self, data=None):
         symbol = ", "
         holders = []
