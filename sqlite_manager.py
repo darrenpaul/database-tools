@@ -1,11 +1,21 @@
+import os
 import sqlite3
 import datetime
 from pprint import pprint
 
-
+ROOT_DIR = os.path.dirname(os.path.abspath(__file__))
+print ROOT_DIR
 class SqliteManager:
     def __init__(self):
-        self.database = r"C:\dev\pymachine\databases\cryptocurrency.db"
+        self.database = os.path.join(ROOT_DIR, "database.sqlite")
+
+    def create_database(self, path=None):
+        if path is None:
+            path = self.database
+        connection = sqlite3.connect(path)
+        cursor = connection.cursor()
+        connection.commit()
+        connection.close()
 
     def create_table(self, table, columns):
         """
@@ -25,7 +35,47 @@ class SqliteManager:
             cursor.execute(command)
 
             command = "CREATE TABLE {table}({columns})".format(table=table, columns=columns)
+            print command
+            # cur.execute("CREATE TABLE definitions (def_id INTEGER, def TEXT, word_def INTEGER, FOREIGN KEY(word_def) REFERENCES vocab(vocab_id))")
             cursor.execute(command)
+
+    def create_table_column_string(self, key, type="text", allow_null=False, unique=False, primary_key=False, foreign_key=[]):
+        """
+        Create a new table in your database along with all the columns
+
+        Keyword Arguments:
+            key {basestring} -- The name of the column
+            type {basestring} -- The Field type of the column
+            allow_null {bool} -- Allow fields to be null
+            unique {bool} -- Makes the value unique
+            primary_key {bool} -- Will this column be a primary key
+            foreign_key {list} -- A list of the column and table. The first value will be the column name, the second value will be the table name
+                E.G. <[column, table]>
+        """
+        _string = str(key)
+        _fieldType = self.__convert_to_sql_field_type(string=type)
+        if _fieldType is not False:
+            _string = _string + " " + _fieldType
+        
+            if allow_null is False:
+                _string = _string + " NOT NULL"
+            
+            if unique:
+                _string = _string + " UNIQUE"
+
+            if primary_key is True:
+                _string = _string + " PRIMARY KEY"
+
+            foreign_key = self.__parse_foreign_keys(data=foreign_key)
+            if foreign_key is not False:
+                _string = _string + ", " + foreign_key
+
+        return _string
+
+    def enable_foreign_keys(self, state=True):
+        connection = sqlite3.connect(self.database)
+        cursor = connection.cursor()
+        cursor.execute("pragma foreign_keys=ON")
 
     def insert_data(self, table=None, data=None):
         """
@@ -156,6 +206,22 @@ class SqliteManager:
             string = "{string}{key}='{value}', ".format(string=string, key=key, value=val)
         string = string[:-2]
         return string
+
+    @staticmethod
+    def __convert_to_sql_field_type(string):
+        _data = {
+            "text": "TEXT",
+            "integer": "INT"
+            }
+        if string in _data.keys():
+            return _data[string]
+        return False
+
+    @staticmethod
+    def __parse_foreign_keys(data):
+        if len(data) == 2:
+            return "FOREIGN KEY({key}) REFERENCES {table}({key})".format(key=data[0], table=data[1])
+        return False
 
     def __build_values_string(self, data=None):
         symbol = ", "
