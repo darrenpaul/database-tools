@@ -4,7 +4,7 @@ import datetime
 from pprint import pprint
 
 ROOT_DIR = os.path.dirname(os.path.abspath(__file__))
-print ROOT_DIR
+
 class SqliteManager:
     def __init__(self):
         self.database = os.path.join(ROOT_DIR, "database.sqlite")
@@ -36,10 +36,9 @@ class SqliteManager:
 
             command = "CREATE TABLE {table}({columns})".format(table=table, columns=columns)
             print command
-            # cur.execute("CREATE TABLE definitions (def_id INTEGER, def TEXT, word_def INTEGER, FOREIGN KEY(word_def) REFERENCES vocab(vocab_id))")
             cursor.execute(command)
 
-    def create_table_column_string(self, key, type="text", allow_null=False, unique=False, primary_key=False, foreign_key=[]):
+    def create_table_column_string(self, key, type="text", allow_null=False, unique=False, primary_key=False, auto_increment=False, foreign_key=[]):
         """
         Create a new table in your database along with all the columns
 
@@ -65,6 +64,9 @@ class SqliteManager:
 
             if primary_key is True:
                 _string = _string + " PRIMARY KEY"
+                if _fieldType == "INT":
+                    if auto_increment is True:
+                        _string = _string + " AUTOINCREMENT"
 
             foreign_key = self.__parse_foreign_keys(data=foreign_key)
             if foreign_key is not False:
@@ -167,12 +169,13 @@ class SqliteManager:
 
         connection.commit()
 
-    def get_last_id_index(self, table):
+    def get_last_column_value(self, table, column_name):
         """
         This gets the last value under the id row
 
         Keyword Arguments:
             table {basestring} -- The name of the table to query from
+            column_name {basestring} -- The name of the column in the table
 
         Returns:
             basestring -- returns the last value
@@ -182,7 +185,7 @@ class SqliteManager:
         cursor = connection.cursor()
 
         with connection:
-            command = "SELECT id FROM {table}".format(table=table)
+            command = "SELECT {column_name} FROM {table}".format(column_name=column_name, table=table)
             cursor.execute(command)
 
             row_id = cursor.fetchall()
@@ -211,7 +214,7 @@ class SqliteManager:
     def __convert_to_sql_field_type(string):
         _data = {
             "text": "TEXT",
-            "integer": "INT"
+            "integer": "INTEGER"
             }
         if string in _data.keys():
             return _data[string]
