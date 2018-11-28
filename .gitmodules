@@ -1,0 +1,3 @@
+[submodule "read-write-tools"]
+	path = read-write-tools
+	url = https://github.com/darrenpaul/read-write-tools.git
